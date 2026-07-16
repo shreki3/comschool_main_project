@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სასტუმროს დაჯავშნის სააგენტო</title>
+    <!-- CSS ფაილის დაკავშირება -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ჰედერი ლოგოთი და ნავიგაციით -->
+    <header>
+        <div class="logo">🏨 Grand Agency</div>
+        <nav>
+            <ul>
+                <li><a href="#">მთავარი</a></li>
+                <li><a href="#">ოთახები</a></li>
+                <li><a href="#">დაჯავშნა</a></li>
+                <li><a href="#">კონტაქტი</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- მომხმარებლის მიმდინარე ბალანსი და ქულები -->
+        <div class="user-panel">
+            <div>
+                <strong>სტუმარი:</strong> გიორგი დევდარიანი
+            </div>
+            <div>
+                <strong>ბიუჯეტი:</strong> <span id="user-budget">500</span> ₾ | 
+                <strong>ქულები:</strong> <span id="user-points">0</span> PTS
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- ოთახების სექცია -->
+            <section class="rooms-section">
+                <h2>ხელმისაწვდომი ოთახები</h2>
+                <p>აირჩიეთ სასურველი კლასის ოთახი დაჯავშნისთვის:</p>
+                
+                <div id="rooms-list">
+                    <!-- ოთახი 1 -->
+                    <div class="room-card" id="room-101">
+                        <div>
+                            <h3>Single Room (N101)</h3>
+                            <p>მაქს. სტუმარი: 1 | ფასი: <strong>100 ₾</strong> / ღამე</p>
+                        </div>
+                        <div>
+                            <span class="badge badge-available">თავისუფალი</span>
+                        </div>
+                    </div>
+                    <!-- ოთახი 2 -->
+                    <div class="room-card" id="room-102">
+                        <div>
+                            <h3>Double Room (N102)</h3>
+                            <p>მაქს. სტუმარი: 2 | ფასი: <strong>180 ₾</strong> / ღამე</p>
+                        </div>
+                        <div>
+                            <span class="badge badge-available">თავისუფალი</span>
+                        </div>
+                    </div>
+                    <!-- ოთახი 3 -->
+                    <div class="room-card" id="room-103">
+                        <div>
+                            <h3>Luxury Suite (N103)</h3>
+                            <p>მაქს. სტუმარი: 4 | ფასი: <strong>300 ₾</strong> / ღამე</p>
+                        </div>
+                        <div>
+                            <span class="badge badge-available">თავისუფალი</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- დაჯავშნის ფორმა და ბაკეტი -->
+            <section class="booking-section">
+                <h2>დაჯავშნის ფორმა</h2>
+                <form class="booking-form" id="bookingForm" onsubmit="handleBooking(event)">
+                    <div class="form-group">
+                        <label for="roomSelect">აირჩიეთ ოთახი:</label>
+                        <select id="roomSelect" required onchange="updateEstimatedPrice()">
+                            <option value="" disabled selected>-- აირჩიეთ --</option>
+                            <option value="101" data-price="100">Single (N101) - 100₾</option>
+                            <option value="102" data-price="180">Double (N102) - 180₾</option>
+                            <option value="103" data-price="300">Suite (N103) - 300₾</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nightsInput">ღამეების რაოდენობა:</label>
+                        <input type="number" id="nightsInput" min="1" value="1" required oninput="updateEstimatedPrice()">
+                    </div>
+
+                    <div style="font-size: 16px; margin: 10px 0;">
+                        <strong>ჯამური ფასი:</strong> <span id="total-price-preview">0</span> ₾
+                        <div style="font-size: 12px; color: #666;">(5 ან მეტ ღამეზე მოქმედებს 10%-იანი ფასდაკლება!)</div>
+                    </div>
+
+                    <button type="submit">ოთახის დაჯავშნა</button>
+                </form>
+
+                <!-- დაჯავშნის სტატუსის შეტყობინება -->
+                <div id="statusMessage" class="status-message"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ფუტერი -->
+    <footer>
+        <p>&copy; 2026 სასტუმროს დაჯავშნის სააგენტო. ყველა უფლება დაცულია.</p>
+    </footer>
+
+    <!-- ინტერაქტიული ლოგიკა (JS) ბიუჯეტის, ქულების და გამოთვლებისთვის -->
+    <script>
+        let budget = 500;
+        let points = 0;
+        const bookedRooms = new Set();
+
+        function updateEstimatedPrice() {
+            const roomSelect = document.getElementById('roomSelect');
+            const nightsInput = document.getElementById('nightsInput');
+            const preview = document.getElementById('total-price-preview');
+
+            if (!roomSelect.value) return;
+
+            const pricePerNight = parseFloat(roomSelect.options[roomSelect.selectedIndex].getAttribute('data-price'));
+            const nights = parseInt(nightsInput.value) || 1;
+
+            let total = pricePerNight * nights;
+            if (nights >= 5) {
+                total = total * 0.9; // 10% ფასდაკლება
+            }
+
+            preview.innerText = Math.round(total);
+        }
+
+        function handleBooking(event) {
+            event.preventDefault();
+
+            const roomSelect = document.getElementById('roomSelect');
+            const nightsInput = document.getElementById('nightsInput');
+            const statusMsg = document.getElementById('statusMessage');
+
+            const roomNumber = roomSelect.value;
+            const pricePerNight = parseFloat(roomSelect.options[roomSelect.selectedIndex].getAttribute('data-price'));
+            const nights = parseInt(nightsInput.value);
+
+            // ფასის გამოთვლა ფასდაკლების გათვალისწინებით
+            let total = pricePerNight * nights;
+            if (nights >= 5) total = total * 0.9;
+            total = Math.round(total);
+
+            // შემოწმება 1: არის თუ არა უკვე დაჯავშნილი
+            if (bookedRooms.has(roomNumber)) {
+                statusMsg.className = "status-message status-error";
+                statusMsg.innerText = "სისტემის შეცდომა: ეს ოთახი უკვე დაკავებულია!";
+                statusMsg.style.display = "block";
+                return;
+            }
+
+            // შემოწმება 2: არის თუ არა საკმარისი ბიუჯეტი
+            if (budget < total) {
+                statusMsg.className = "status-message status-error";
+                statusMsg.innerText = `დაჯავშნა ჩაიშალა: არასაკმარისი ბიუჯეტი! საჭიროა: ${total} ₾`;
+                statusMsg.style.display = "block";
+                return;
+            }
+
+            // წარმატებული დაჯავშნა
+            budget -= total;
+            const earnedPoints = Math.floor(total / 10);
+            points += earnedPoints;
+
+            // ბიუჯეტისა და ქულების განახლება ეკრანზე
+            document.getElementById('user-budget').innerText = budget;
+            document.getElementById('user-points').innerText = points;
+
+            // ოთახის სტატუსის განახლება სიაში
+            bookedRooms.add(roomNumber);
+            const roomCard = document.getElementById(`room-${roomNumber}`);
+            roomCard.classList.add('selected');
+            const badge = roomCard.querySelector('.badge');
+            badge.className = "badge badge-booked";
+            badge.innerText = "დაკავებული";
+
+            // წარმატების მესიჯი
+            statusMsg.className = "status-message status-success";
+            statusMsg.innerText = `გილოცავთ! ოთახი N${roomNumber} წარმატებით დაიჯავშნა ${nights} ღამით. დაგერიცხათ ${earnedPoints} ქულა.`;
+            statusMsg.style.display = "block";
+        }
+    </script>
+</body>
+</html>
