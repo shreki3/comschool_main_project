@@ -13,7 +13,7 @@ class TestHotelSystem(unittest.TestCase):
         self.hotel.add_room(self.room1)
         self.hotel.add_room(self.room2)
         
-        self.customer = Customer(name="გიორგი", budget=500.0)
+        self.customer = Customer(name="შოთა", budget=500.0)
 
     # 1. ტესტი Customer.pay_for_booking() - ბიუჯეტის სწორად შემცირება
     def test_pay_for_booking_success(self):
